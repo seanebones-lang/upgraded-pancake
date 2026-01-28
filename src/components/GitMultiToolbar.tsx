@@ -5,7 +5,7 @@ import { Diff, Plus, Upload } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from '@/hooks/use-toast'
 import { Octokit } from '@octokit/rest'
-import { useSession } from '@/auth'
+import { useSession } from 'next-auth/react'
 
 export function GitMultiToolbar({ repo }: { repo: string }) {
   const [status, setStatus] = useState('')
@@ -13,7 +13,7 @@ export function GitMultiToolbar({ repo }: { repo: string }) {
   const session = useSession()
 
   const getStatus = async () => {
-    const kit = new Octokit({ auth: session?.accessToken })
+    const kit = new Octokit({ auth: (session as any)?.accessToken })
     const { data } = await kit.rest.repos.getContent({
       owner: repo.split('/')[0],
       repo: repo.split('/')[1],

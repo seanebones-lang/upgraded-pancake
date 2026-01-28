@@ -1,6 +1,7 @@
 "use client"
 
-import { signIn, signOut, useSession } from '@/auth'
+import { signIn, signOut } from '@/auth'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 

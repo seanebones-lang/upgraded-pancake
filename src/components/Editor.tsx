@@ -4,7 +4,7 @@ import Editor from '@monaco-editor/react'
 import { useEditorStore } from '@/stores/editor'
 import { useEffect } from 'react'
 import { getFileContent, createOrUpdateFile } from '@/lib/github'
-import { useSession } from '@/auth'
+import { useSession } from 'next-auth/react'
 
 export default function MonacoEditor() {
   const { currentRepo, currentFile, fileContent, setFileContent } = useEditorStore()
@@ -13,7 +13,7 @@ export default function MonacoEditor() {
   useEffect(() => {
     if (currentRepo && currentFile && session) {
       const [owner, repo] = currentRepo.split('/')
-      getFileContent(owner, repo, currentFile, 'main', session.accessToken as string)
+      getFileContent(owner, repo, currentFile, 'main', (session as any).accessToken as string)
         .then(async (data: any) => {
           const content = Buffer.from(data.content!, 'base64').toString()
           setFileContent(content)
@@ -40,7 +40,7 @@ export default function MonacoEditor() {
           `Update ${currentFile}`,
           'main',
           undefined,
-          session.accessToken as string
+          (session as any).accessToken as string
         )
         console.log('Saved!')
       } catch (error) {

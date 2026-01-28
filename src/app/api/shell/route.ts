@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     return NextResponse.json({ 
       error: 'Shell execution failed',
-      details: error.message 
+      details: (error as Error).message 
     }, { status: 500 })
   }
 }

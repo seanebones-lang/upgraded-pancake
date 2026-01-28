@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Button as GitButton } from '@/components/ui/button'
 import { useState } from 'react'
 import { useEditorStore } from '@/stores/editor'
-import { useSession } from '@/auth'
+import { useSession } from 'next-auth/react'
 import { getOctokit } from '@/lib/github'
 import { toast } from '@/hooks/use-toast'
 
@@ -18,11 +18,11 @@ export function GitToolbar() {
   const session = useSession()
 
   const handleCommitPush = async () => {
-    if (!currentRepo || !currentFile || !session?.accessToken || !commitMsg) return
+    if (!currentRepo || !currentFile || !(session as any)?.accessToken || !commitMsg) return
 
     setLoading(true)
     const [owner, repo] = currentRepo.split('/')
-    const kit = getOctokit(session.accessToken)
+    const kit = getOctokit((session as any).accessToken)
 
     try {
       // Commit file
@@ -36,7 +36,7 @@ export function GitToolbar() {
       })
 
       // Push (if needed)
-      await kit.rest.repos.mergeUpstreamBranch({
+      await kit.rest.repos.mergeUpstream({
         owner,
         repo,
         branch: 'main',

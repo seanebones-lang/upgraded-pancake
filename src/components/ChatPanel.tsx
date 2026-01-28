@@ -21,7 +21,7 @@ export function ChatPanel() {
   return (
     <div className="flex flex-col h-full">
       <div className="p-3 border-b border-border flex items-center gap-2">
-        <Select value={mode} onValueChange={(v) => setMode(v as any)}>
+        <Select value={mode} onValueChange={(v: string) => setMode(v as any)}>
           <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>

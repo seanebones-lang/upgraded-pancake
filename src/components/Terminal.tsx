@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { Terminal as XTerm } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
-import { SearchAddon } from 'xterm-addon-search'
+import { SearchAddon } from '@xterm/addon-search'
 import 'xterm/css/xterm.css'
 
 export default function Terminal() {
@@ -33,8 +33,8 @@ export default function Terminal() {
     term.onData(async (data) => {
       if (data === '\r') {
         term.write('\r\n')
-        const lines = term.buffer.active.getLines(0, term.buffer.active.cursorY + 1).map(line => line.translateToString(true))
-        const command = lines[lines.length - 1]?.trim()
+const commandLine = term.buffer.active.getLine(term.buffer.active.cursorY)
+const command = commandLine?.translateToString(true)?.trim()
         
         if (command) {
           try {
