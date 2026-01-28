@@ -3,58 +3,69 @@
 import { useEffect, useRef } from 'react'
 import { Terminal as XTerm } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
+import { SearchAddon } from 'xterm-addon-search'
 import 'xterm/css/xterm.css'
 
 export default function Terminal() {
   const terminalRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<XTerm | null>(null)
-  const fitAddonRef = useRef<FitAddon | null>(null)
 
   useEffect(() => {
     if (!terminalRef.current) return
 
     const term = new XTerm({
       cursorBlink: true,
-      theme: {
-        background: '#1e1e1e',
-        foreground: '#d4d4d4',
-      },
+      fontSize: 14,
+      theme: { background: '#0d1117' },
     })
 
     const fitAddon = new FitAddon()
+    const searchAddon = new SearchAddon()
     term.loadAddon(fitAddon)
+    term.loadAddon(searchAddon)
 
     term.open(terminalRef.current)
     fitAddon.fit()
 
     termRef.current = term
-    fitAddonRef.current = fitAddon
 
-    // Mock shell
-    term.write('NextEleven Code Terminal$ \r\n')
-    term.onData(data => {
-      term.write(data)
-      // Here integrate with Shell tool via API
+    // Terminal input -> API
+    term.onData(async (data) => {
       if (data === '\r') {
-        term.write('\r\nCommand executed\r\nNextEleven Code Terminal$ ')
+        term.write('\r\n')
+        const lines = term.buffer.active.getLines(0, term.buffer.active.cursorY + 1).map(line => line.translateToString(true))
+        const command = lines[lines.length - 1]?.trim()
+        
+        if (command) {
+          try {
+            const res = await fetch('/api/shell', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ command }),
+            })
+            const data = await res.json()
+            term.write(`\r\n${data.output || 'Executed'}\r\n$ `)
+          } catch {
+            term.write('\r\nError executing command\r\n$ ')
+          }
+        } else {
+          term.write('\r\n$ ')
+        }
+      } else {
+        term.write(data)
       }
     })
 
+    term.write('NextEleven Terminal v1.0\r\n$ ')
+
+    const resize = () => fitAddon.fit()
+    window.addEventListener('resize', resize)
+
     return () => {
       term.dispose()
+      window.removeEventListener('resize', resize)
     }
   }, [])
 
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver(() => {
-      fitAddonRef.current?.fit()
-    })
-    const currentRef = terminalRef.current
-    if (currentRef) {
-      resizeObserver.observe(currentRef)
-    }
-    return () => resizeObserver.disconnect()
-  }, [])
-
-  return <div ref={terminalRef} className="h-full w-full" />
+  return <div ref={terminalRef} className="h-full w-full font-mono" />
 }

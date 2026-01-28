@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { callGrok, type ChatMode } from '@/lib/grok'
+import { callGrok, type ChatMode, executeTool } from '@/lib/grok'
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,30 +11,37 @@ export async function POST(req: NextRequest) {
       { role: 'user' as const, content: message }
     ]
 
-    // Add system prompt based on mode
     const systemPrompts: Record<ChatMode, string> = {
       default: 'You are NextEleven Code, an AI coding assistant.',
-      refactor: 'You are a code refactoring expert. Suggest improvements and provide refactored code.',
-      orchestrate: 'You are the Orchestrator agent. Route tasks to specialist agents and coordinate swarms.',
-      debug: 'You are a debugging expert. Analyze errors and suggest fixes.',
-      review: 'You are a code reviewer. Provide constructive feedback and best practices.',
-      agent: 'You are an autonomous agent. Use tools and MCP when needed.',
+      refactor: 'You are a code refactoring expert.',
+      orchestrate: 'You are the Orchestrator. Use MCP tools for complex tasks.',
+      debug: 'Debugging expert.',
+      review: 'Code reviewer.',
+      agent: 'Autonomous agent. Use MCP tools (CallMcpTool) for all operations.',
     }
 
-    messages.unshift({ role: 'system' as const, content: systemPrompts[mode as ChatMode] })
+    messages.unshift({ role: 'system' as const, content: systemPrompts[mode as keyof typeof systemPrompts] })
 
-    const stream = await callGrok(messages, mode as ChatMode)
+    const stream = await callGrok(messages, mode)
 
     const streamResponse = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder()
         
         for await (const chunk of stream) {
+          // Handle tool_calls
+          const toolCall = chunk.choices[0]?.delta?.tool_calls?.[0]
+          if (toolCall) {
+            const result = await executeTool(toolCall)
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: \`Tool result: ${JSON.stringify(result)}\` })}\n\n`))
+            continue
+          }
+
           const content = chunk.choices[0]?.delta?.content || ''
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`))
         }
         
-        controller.enqueue(encoder.encode('data: [DONE]\\n\\n'))
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'))
         controller.close()
       },
     })
@@ -47,6 +54,6 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Chat error' }, { status: 500 })
   }
 }
