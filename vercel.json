@@ -1,9 +1,3 @@
 {
-  "installCommand": "npm install --legacy-peer-deps",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/vercel-toml"
-    }
-  ]
+  "installCommand": "npm install --legacy-peer-deps"
 }
