@@ -3,7 +3,7 @@
 import { useChat } from '@/hooks/use-chat'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
+// import ScrollArea removed (using div overflow-auto)
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Send, StopCircle, Trash2 } from 'lucide-react'
 
@@ -38,7 +38,7 @@ export function ChatPanel() {
           <Trash2 size={16} />
         </Button>
       </div>
-      <ScrollArea className="flex-1 p-4">
+      <div className="flex-1 p-4 max-h-full overflow-auto">
         <div className="space-y-4">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -53,7 +53,7 @@ export function ChatPanel() {
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
       <div className="p-3 border-t border-border flex gap-2">
         <Input
           placeholder="Ask agent to code, refactor, debug..."
