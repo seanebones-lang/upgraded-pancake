@@ -1,0 +1,19 @@
+{
+  "versionFiles": [
+    "package.json"
+  ],
+  "changelogFile": "CHANGELOG.md",
+  "commitTypes": {
+    "feat": "Features",
+    "fix": "Bug Fixes",
+    "docs": "Documentation",
+    "perf": "Performance",
+    "refactor": "Refactoring"
+  },
+  "deployments": {
+    "production": {
+      "type": "vercel",
+      "requiresApproval": true
+    }
+  }
+}

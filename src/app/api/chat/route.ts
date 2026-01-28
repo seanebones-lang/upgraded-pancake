@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
           const toolCall = chunk.choices[0]?.delta?.tool_calls?.[0]
           if (toolCall) {
             const result = await executeTool(toolCall)
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: \`Tool result: ${JSON.stringify(result)}\` })}\n\n`))
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: `Tool result: ${JSON.stringify(result)}` })}\n\n`))
             continue
           }
 
