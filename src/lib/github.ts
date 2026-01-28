@@ -26,7 +26,7 @@ export async function getRepoTree(owner: string, repo: string, branch = 'main', 
     owner,
     repo,
     tree_sha: branch,
-    recursive: 1,
+    recursive: '1',
   })
   return data.tree
 }

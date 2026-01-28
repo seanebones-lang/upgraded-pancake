@@ -4,7 +4,7 @@ import { RepoSelector } from '@/components/RepoSelector'
 import { useEditorStore } from '@/stores/editor'
 import { Button } from '@/components/ui/button'
 import { Play, GitCommit, Upload, Terminal as TerminalIcon } from 'lucide-react'
-import { useSession } from '@/auth'
+import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 
 export function WorkspaceHeader({ onToggleTerminal }: { onToggleTerminal: () => void }) {

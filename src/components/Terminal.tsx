@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useRef } from 'react'
-import { Terminal as XTerm } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
+import { Terminal as XTerm } from '@xterm/xterm'
+import { FitAddon } from '@xterm/addon-fit'
 import { SearchAddon } from '@xterm/addon-search'
-import 'xterm/css/xterm.css'
+import "@xterm/xterm/css/xterm.css"
 
 export default function Terminal() {
   const terminalRef = useRef<HTMLDivElement>(null)

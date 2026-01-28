@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useEditorStore } from '@/stores/editor'
 import { getOctokit } from '@/lib/github'
-import { useSession } from '@/auth'
+import { useSession } from 'next-auth/react'
 
 export function useGlobalKeyboard() {
   const setFileContent = useEditorStore(s => s.setFileContent)
@@ -14,11 +14,11 @@ export function useGlobalKeyboard() {
       // Ctrl+S - Save file
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault()
-        if (currentRepo && currentFile && session?.accessToken) {
+        if (currentRepo && currentFile && (session as any)?.accessToken) {
           const [owner, repo] = currentRepo.split('/')
           const content = useEditorStore.getState().fileContent
           try {
-            await getOctokit(session.accessToken).rest.repos.createOrUpdateFileContents({
+            await getOctokit((session as any).accessToken).rest.repos.createOrUpdateFileContents({
               owner, repo, path: currentFile, message: `Save ${currentFile}`,
               content: btoa(content), branch: 'main'
             })

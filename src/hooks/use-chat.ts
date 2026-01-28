@@ -60,7 +60,7 @@ export function useChat() {
         }
       }
     } catch (error) {
-      if (error.name !== 'AbortError') {
+      if ((error as Error).name !== 'AbortError') {
         console.error(error)
       }
     } finally {

@@ -1,7 +1,6 @@
 "use client"
 
 import { useRepoTree } from '@/hooks/use-github'
-// import ScrollArea removed (using div)
 import { File, Folder } from 'lucide-react'
 import Link from 'next/link'
 
@@ -41,7 +40,7 @@ export function FileTree({ ownerRepo }: { ownerRepo: string }) {
   )
 
   return (
-    <div className="max-h-full overflow-auto p-2 flex flex-col""h-full w-full">
+    <div className="h-full overflow-auto p-2 flex flex-col">
       {renderTree(tree as TreeNode[])}
     </div>
   )

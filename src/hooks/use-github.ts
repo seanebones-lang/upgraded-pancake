@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getUserRepos, getRepoTree } from '@/lib/github'
-import { useSession } from '@/auth'
+import { useSession } from 'next-auth/react'
 
 export function useRepos() {
   const [repos, setRepos] = useState<any[]>([])
@@ -9,7 +9,7 @@ export function useRepos() {
 
   useEffect(() => {
     if (session) {
-      getUserRepos(session.accessToken)
+      getUserRepos((session as any).accessToken)
         .then(setRepos)
         .finally(() => setLoading(false))
     }
@@ -24,7 +24,7 @@ export function useRepoTree(owner: string, repo: string, branch = 'main') {
   const session = useSession()
 
   useEffect(() => {
-    getRepoTree(owner, repo, branch, session?.accessToken)
+    getRepoTree(owner, repo, branch, (session as any)?.accessToken)
       .then(t => setTree(t))
       .finally(() => setLoading(false))
   }, [owner, repo, branch, session])
